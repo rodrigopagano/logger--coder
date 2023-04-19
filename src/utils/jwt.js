@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
-const BdsessionManager = require('../dao/sessionManager');
-const { PRIVATE_KEY_JWT } = require('./constants');
+const { PRIVATE_KEY_JWT } = require('../config/config');
+const { sesionServices } = require('../service');
+
 
 
 const generateToken = (payload) => {
@@ -21,14 +22,14 @@ const getPayload = (req,res,next) => {
          if (error){
             res.status(500).send({error:'error inesperado',error});
          }else{
-            const user = await BdsessionManager.UserId(credential.payload)
+            const user = await sesionServices.getUserId (credential.payload)
             req.payload.user = user
             next();
 
          }
      })
   } else{
-    res.status(401).send({error:'no se encontro token'});
+    res.status(401).send({error:'no se encontro el token'});
         
   }  
 }

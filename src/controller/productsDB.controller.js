@@ -1,101 +1,94 @@
-const productManagerDB = require("../dao/ProductManagerDB");
+const { productServices } = require("../service/index");
 
 
 const getProductsBd = async (req, res) => {
-  const {limit, page , sort, ...query} = req.query;
-       const products = await Products.getProduct(page, limit, sort, query);
-       if (products){
-          return res.json({
-            msg: 'Ok',
-            playload: products,
-         });      
-       }else{
-        return res.json({
-          msg: 'No se puedo mostrar Producto',
-          
-       });      
-
-       }
-
-     
+  try {
+    
+    const { limit, page, sort, ...query } = req.query;
+    const products = await productServices.getProduct(page, limit, sort, query);
+   
+    return res.json({
+      status: "Sucess",
+      playload: products,
+    })
+  } catch (error) {
+      return res.json({
+      status: "Error",
+      playload: "error al intentar mostrar productos",
+     })
+  }
+    
 };
 
-const addProductBd = async (req, res)=>{
-  const product = req.body;
-    const newproduct = await Products.addProduct(product);
-    if (newproduct){
-      return res.json({
-        msg: 'Producto Agregado',
-        playload: newproduct,
-      });      
-    }else{
-      return res.json({
-        msg: 'No se puedo Crear Producto',
-        
-     });      
-    }
-  
-}
 
-
-const getProductIdBd = async (req, res)=>{
-  const id = req.params.pid 
-  const getProductId = await Products.getProductId(id);
-  if (getProductId){
+const getProductIdBd = async (req, res) => {
+  try {
+    const id = req.params.pid
+    const getProductId = await productServices.getProductId(id);
     return res.json({
-      msg: 'Producto Encontrado',
+      status: "Sucess",
       playload: getProductId,
-    });      
-  }else{
+    })
+  } catch (error) {
     return res.json({
-      msg: 'Producto No encontrado',
-      
-   });      
-  }
+    status: "Error",
+    playload: "error al intentar mostrar producto",
+   })}
+}
+    
 
-
-
+const addProductBd = async (req, res) => {
+  try {
+    const product = req.body;
+    const newproduct = await productServices.addProduct(product);
+    return res.json({
+      status: "Sucess",
+      playload:newproduct,
+    })
+  } catch (error) {
+ 
+    return res.json({
+      status: "error",
+      playload:"error al crear producto",
+    })}
 }
 
-const UpdateProductBd = async (req, res)=>{
-  const id = req.params.pid 
-  const product = req.body
-  const UpdateProductId = await Products.UpdateProduct(id, product);
-  if (UpdateProductId){
+const updateProductBd = async (req, res) => {
+  try {
+    const id = req.params.pid
+    const product = req.body
+    const UpdateProductId = await productServices.updateProduct(id, product);
     return res.json({
-      msg: 'Producto Actualizado',
-      playload: UpdateProductId,
-    });      
-  }else{
+      status: "Sucess",
+      playload:UpdateProductId,
+    })
+    
+  } catch (error) {
     return res.json({
-      msg: 'Producto No Actualizado',
-      
-   });      
-  }
-  
-
+      status: "error",
+      playload:"error al actualizar producto",
+    })}
 }
 
-const deleteProductBd = async (req, res)=>{
-  const id = req.params.pid 
-    const deleteproduct = await Products.DeleteProductId(id);
-    if (deleteproduct){
-      return res.json({
-        msg: 'Producto Eliminado',
-        playload: deleteproduct,
-      });      
-    }else{
-      return res.json({
-        msg: 'Producto No Eliminado'
-        
-     });      
-    }
+const deleteProductBd = async (req, res) => {
+ try {
+   const id = req.params.pid
+   const deleteproduct = await productServices.deleteProductId(id);
+   return res.json({
+    status: "Sucess",
+    playload: deleteproduct,
+  })
+ } catch (error) {
+  return res.json({
+    status: "erorr",
+    playload: "error al eliminar producto",
+  })}
 }
 
-module.exports ={
-    getProductsBd, 
-    getProductIdBd,    
-    addProductBd,
-    UpdateProductBd,     
-    deleteProductBd,
+module.exports = {
+  getProductsBd,
+  getProductIdBd,
+  addProductBd,
+  updateProductBd,
+  deleteProductBd,
 }

@@ -1,5 +1,5 @@
-const { COOKIE_USER } = require("../utils/constants")
-
+const { COOKIE_USER}=  require("../config/config");
+const { DtoUser } = require("../dao/DTOs/dtoUsers");
 
 const sessionLogin = async (req,res)=>{
     
@@ -12,7 +12,8 @@ const loginRegister = async (req,res)=>{
     res.send(req.user) 
 }  
 const getCurrent = async (req,res)=>{
-    res.send(req.user) 
+    newUser = DtoUser(req.user)
+    res.send(newUser) 
 }  
 
 

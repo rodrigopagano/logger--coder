@@ -1,3 +1,4 @@
+const config = require('dotenv');
 const express = require('express');
 const {connectionSocket} = require('./utils/soket.io');
 const {Server} = require('socket.io');

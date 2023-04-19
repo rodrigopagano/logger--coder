@@ -10,5 +10,6 @@ module.exports ={
   LOGIN_STRATEGY: process.env.LOGIN_STRATEGY,
   JWT_STRATEGY: process.env.JWT_STRATEGY,
   PORT : process.env.PORT,
-  COOKIE_USER: process.env.COOKIE_USER
+  COOKIE_USER: process.env.COOKIE_USER,
+  PERCIST:process.env.PERCIST
 }

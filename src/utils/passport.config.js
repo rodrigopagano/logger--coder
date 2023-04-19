@@ -1,11 +1,11 @@
 const passport = require("passport");
 const passportLocal = require("passport-local");
-const { REGISTER_STRATEGY, LOGIN_STRATEGY, JWT_STRATEGY, PRIVATE_KEY_JWT, COOKIE_USER } = require("../config/config");
 const { hashPassword, comparePassword } = require("./hashPassword");
 const {Strategy, ExtractJwt } = require('passport-jwt');
 const { generateToken } = require("./jwt");
-const userModel = require("../dao/models/user.model");
-const sessionManager = require("../dao/sessionManager");
+const { COOKIE_USER, JWT_STRATEGY, REGISTER_STRATEGY, LOGIN_STRATEGY, PRIVATE_KEY_JWT } = require("../config/config");
+const { sesionServices } = require("../service");
+
 
 
 
@@ -27,12 +27,9 @@ passport.use(
      secretOrKey: PRIVATE_KEY_JWT
 }, async(jwt_payload, done) => {
     try {
-          
           const {payload} = jwt_payload
-          const user = await userModel.findById(payload.id);
-          delete user._doc.password
-          console.log(user)
-          done (null, {user:user._doc})
+          const user = await sesionServices.getUserId (payload.id);
+          done (null, {user})
     } catch (error) {
       done(error)
     }
@@ -48,16 +45,18 @@ passport.use(
         passReqToCallback: true,
         usernameField: "email",
       },async (req, username, password, done) => {
+          
           const { firstName, lastName, age } = req.body;
+
         try {
            
-           const exitEmail = await sessionManager.getEmail({email:username});
+           const exitEmail = await sesionServices.getEmail({email:username});
             if (exitEmail) {
               done('register Error', false,{message:"Usuario Existente con ese Emial"} );
             } else {
               const hash = await hashPassword(password);
               if (username === "adminCoder@coder.com") {
-                const user = await sessionManager.createUser({
+                const user = await sesionServices.createUser({
                   firstName: firstName,
                   lastName: lastName,
                   age:age,
@@ -67,7 +66,7 @@ passport.use(
                 });
                 done(null, user);
               } else {
-                const user = await sessionManager.createUser({
+                const user = await sesionServices.createUser({
                   firstName: firstName,
                   lastName: lastName,
                   age:age,
@@ -97,7 +96,7 @@ passport.use(
        
         try {
 
-          const user = await sessionManager.getEmail({email:username})
+          const user = await sesionServices.getEmail({email:username})
           const isVadidPassword = await comparePassword(password, user.password)
           if (user && isVadidPassword) {
             const token = generateToken({id:user.id, rol:user.rol})
