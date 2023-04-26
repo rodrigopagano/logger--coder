@@ -4,7 +4,8 @@ const { hashPassword, comparePassword } = require("./hashPassword");
 const {Strategy, ExtractJwt } = require('passport-jwt');
 const { generateToken } = require("./jwt");
 const { COOKIE_USER, JWT_STRATEGY, REGISTER_STRATEGY, LOGIN_STRATEGY, PRIVATE_KEY_JWT } = require("../config/config");
-const { sesionServices } = require("../service");
+const { sesionServices, cartsServices } = require("../service");
+const { default: mongoose } = require("mongoose");
 
 
 
@@ -45,7 +46,7 @@ passport.use(
         passReqToCallback: true,
         usernameField: "email",
       },async (req, username, password, done) => {
-          
+        
           const { firstName, lastName, age } = req.body;
 
         try {
@@ -55,6 +56,13 @@ passport.use(
               done('register Error', false,{message:"Usuario Existente con ese Emial"} );
             } else {
               const hash = await hashPassword(password);
+              const cart = await cartsServices.createCart({
+                priceTotal:0, 
+                quantityTotal:0,
+                products:[],
+               })
+              const id = mongoose.Types.ObjectId(cart);
+
               if (username === "adminCoder@coder.com") {
                 const user = await sesionServices.createUser({
                   firstName: firstName,
@@ -62,18 +70,23 @@ passport.use(
                   age:age,
                   email: username,
                   password: hash,
+                  cart:id,
                   rol: "administrador",
                 });
                 done(null, user);
               } else {
-                const user = await sesionServices.createUser({
+                 const user = await sesionServices.createUser({
                   firstName: firstName,
                   lastName: lastName,
                   age:age,
                   email: username,
                   password: hash,
+                  cart:id
+                  
                 });
-               
+                console.log(id)
+                console.log(cart)
+                console.log(user)
                 done(null, user);
               }
             }

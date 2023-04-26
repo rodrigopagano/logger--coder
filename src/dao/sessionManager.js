@@ -11,8 +11,8 @@ class sessionManager {
   }
  
   createUser = async (user)=>{
-      const { firstName,lastName, email, age, password,rol} = user
-      return await userModel.create({firstName , lastName, email, age, password, rol })
+      const { firstName,lastName, email, age, password,rol, cart} = user
+      return await userModel.create({firstName , lastName, email, age, password, rol, cart })
   }
 
 

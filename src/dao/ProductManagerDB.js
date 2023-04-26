@@ -1,29 +1,13 @@
 const productModel = require('../dao/models/products.model')
 
-class productManagerDB {
-  addProduct = async (product) => {
-    return await productModel.create(product);
+class ProductDaoMongo {
   
-}
-  getProduct = async (page = 1, limit = 6 , sort = '', query ={}) => {
-      return  await productModel.paginate(query, { page, limit, sort:{price:sort}});
-  }
-
-  getProductId = async (id) => {
-   return await productModel.findById(id);
-  }
-
-  UpdateProduct = async (id, product) => {
-     return await productModel.updateOne({_id:id}, product);
-     
-  }
-
-  DeleteProductId = async (id) => {
-     return await productModel.deleteOne({_id:id});
-
-  }
+  get = (page = 1, limit = 6 , sort = '', query ={}) => productModel.paginate(query, { page, limit, sort:{price:sort}})
+  create = (product) => productModel.create(product);
+  getId = (id) => productModel.findById(id);
+  update = (id, product) => productModel.updateOne({_id:id}, product);
+  deleter = (id) => productModel.deleteOne({_id:id});
 
 }
 
-
-module.exports = new productManagerDB
+module.exports = new ProductDaoMongo()
