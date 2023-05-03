@@ -1,4 +1,4 @@
-const config = require('dotenv');
+//const config = require('dotenv');
 const express = require('express');
 const {connectionSocket} = require('./utils/soket.io');
 const {Server} = require('socket.io');
@@ -16,14 +16,17 @@ const viewRoute = require('./routes/views.route');
 const initpassaport =require('./utils/passport.config');
 const passport = require('passport');
 const { MONGODBURL, PORT } = require('./config/config');
+const mdwError = require('./utils/middleware/errors');
+const mdwLogger = require('./config/configWinston');
+const loggerTest = require('./controller/controller.logger');
+const { logger } = require('winston');
 if (MONGODBURL) import('./config/configDB');
 const cookie = require('cookie-parser');
 
 
-
-const httpServer = server.listen(8080, ()=> {
-    console.log('Servidor escuchando en puerto 8080')
-})
+const httpServer = server.listen(PORT, () => 
+ Logger.debug(` Server started on port http://localhost:${PORT}`),
+)
 
 
 
@@ -39,6 +42,8 @@ server.use(express.static(__dirname+'/public'));
 server.use(express.json())
 server.use(express.urlencoded({extended:true}))
 
+server.use(mdwLogger);
+
 
 server.use("/api/products/", productsRoute);
 server.use("/api/carts/", cardsRoute);
@@ -46,7 +51,11 @@ server.use("/", viewRoute);
 server.use("/api/productsDB/",productsDBroute);
 server.use("/api/cartsDB/",cartsDBroute);
 server.use("/api/chat/",Chatroute);
-server.use("/api/session/",sessionRoute);
+server.use("/api/session/",sessionRoute)
+server.use('api/loggertest',loggertest)
+
+
+server.use(mdwerror);
 
 
 
